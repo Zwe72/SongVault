@@ -1,6 +1,7 @@
 package harjoitustyo.songvault.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import harjoitustyo.songvault.model.Song;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
-@RequestMapping
+@RequestMapping("/api")
 public class SongRestController {
     private final SongRepository repository;
 
@@ -30,9 +31,15 @@ public class SongRestController {
     }
 
     @GetMapping("/songs")
-    public List<Song> songListRest() {
-        return (List<Song>)repository.findAll();
+public List<Song> songListRest(@RequestParam(required = false) String keyword) {
+    if (keyword != null && !keyword.isEmpty()) {
+        return repository
+    .findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCaseOrGenreContainingIgnoreCase(
+        keyword, keyword, keyword);
+    } else {
+        return (List<Song>) repository.findAll();
     }
+}
 
     @GetMapping("/songs/{id}")
     public Optional<Song> findSongRest(@PathVariable("id") Long songId){
@@ -45,14 +52,14 @@ public class SongRestController {
         return repository.save(newSong);
     }
 
-    @PutMapping("songs/{id}")
+    @PutMapping("/songs/{id}")
     public Song editSong(@PathVariable Long id, @RequestBody Song editedSong) {
         editedSong.setId(id);
         return repository.save(editedSong);
     }
 
     @DeleteMapping("/songs/{id}")
-    public void deleteBook(@PathVariable Long id) {
+    public void deleteSong(@PathVariable Long id) {
         repository.deleteById(id);
     }
 }

@@ -8,14 +8,25 @@
 
     <h1>Song List</h1>
 
-    <table>
+    <form th:action="@{/songlist}" method="get">
+        <input type="text" name="keyword" placeholder="Search songs...">
+        <button type="submit">Filter</button>
+    </form>
+
+     <p>
+        <a th:href="@{/addsong}">Add new song</a>
+    </p>
+
+    <p th:if="${#lists.isEmpty(songs)}">No songs added yet.</p>
+
+    <table th:if="${not #lists.isEmpty(songs)}">
         <tr>
             <th>Title</th>
             <th>Artist</th>
             <th>Genre</th>
             <th>Year</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th></th>
+            <th></th>
         </tr>
 
         <tr th:each="song : ${songs}">
@@ -24,7 +35,8 @@
             <td th:text="${song.genre}"></td>
             <td th:text="${song.year}"></td>
             <td><a th:href="@{/editsong/{id}(id=${song.id})}">Edit</a></td>
-            <td><a th:href="@{/deletesong/{id}(id=${song.id})}">Delete</a></td>>
+            <td><a th:href="@{/deletesong/{id}(id=${song.id})}"
+                onclick="return confirm('Are you sure you want to delete this song?')">Delete</a></td>
         </tr>
     </table>
 </body>

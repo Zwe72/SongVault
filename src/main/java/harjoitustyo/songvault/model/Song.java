@@ -1,7 +1,7 @@
 package harjoitustyo.songvault.model;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 public class Song {
@@ -9,14 +9,22 @@ public class Song {
     @GeneratedValue(strategy = GenerationType.AUTO)
     
     private Long id;
+
+    @NotEmpty(message = "Title is required")
     private String title;
+
+    @NotEmpty(message = "Artist is required")
     private String artist;
+    
     private String genre;
     private int year;
 
 
     public Song() {}
 
+
+    @ManyToOne
+    private User user;
 
     public Long getId() {
         return id;

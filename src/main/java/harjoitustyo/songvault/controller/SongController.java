@@ -8,14 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import harjoitustyo.songvault.model.Song;
 import harjoitustyo.songvault.model.SongRepository;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
@@ -36,16 +33,6 @@ public class SongController {
     public @ResponseBody Optional<Song> findSong(@PathVariable("id") Long songId) {
         
         return repository.findById(songId);
-    }
-
-    @JsonIgnoreProperties("songs")
-    @ManyToOne
-    @JoinColumn()
-
-    @GetMapping("/songlist")
-    public String songList(Model model) {
-        model.addAttribute("songs", repository.findAll());
-        return "songlist";
     }
 
     @GetMapping("/addsong")
@@ -71,6 +58,18 @@ public class SongController {
         Song song = repository.findById(id).orElse(null);
         model.addAttribute("song", song);
         return "addsong";
+    }
+
+    @GetMapping("/songlist")
+    public String songList(@RequestParam(required = false) String keyword, Model model) {
+        if (keyword != null && !keyword.isEmpty()) {
+            model.addAttribute("songs", repository
+    .findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCaseOrGenreContainingIgnoreCase(
+        keyword, keyword, keyword));
+        } else {
+            model.addAttribute("songs", repository.findAll());
+        }
+        return "songlist";
     }
 
     @GetMapping("/login")
