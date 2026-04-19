@@ -1,12 +1,31 @@
 <!DOCTYPE html>
-<html>
-    <head>
-
-    </head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SongVault</title>
+    <meta charset="UTF-8">
+</head>
 <body>
 
-    <h1>Songs</h1>
+    <h1>Song List</h1>
 
-    <p></p>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Genre</th>
+            <th>Year</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+
+        <tr th:each="song : ${songs}">
+            <td th:text="${song.title}"></td>
+            <td th:text="${song.artist}"></td>
+            <td th:text="${song.genre}"></td>
+            <td th:text="${song.year}"></td>
+            <td><a th:href="@{/editsong/{id}(id=${song.id})}">Edit</a></td>
+            <td><a th:href="@{/deletesong/{id}(id=${song.id})}">Delete</a></td>>
+        </tr>
+    </table>
 </body>
 </html>
