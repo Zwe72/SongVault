@@ -17,9 +17,16 @@ public class SongvaultApplication {
 
 	@Bean
 	public CommandLineRunner demo(UserRepository userRepository) {
-		return (args) -> {
-			userRepository.save(new User("user", "{noop}password", "USER"));
-		};
-	}
+    return (args) -> {
+
+        if (userRepository.findByUsername("admin") == null) {
+            userRepository.save(new User("admin", "{noop}password", "ROLE_ADMIN"));
+        }
+
+        if (userRepository.findByUsername("user") == null) {
+            userRepository.save(new User("user", "{noop}password", "ROLE_USER"));
+        }
+    };
+}
 
 }

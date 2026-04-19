@@ -1,5 +1,7 @@
 package harjoitustyo.songvault.model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +17,9 @@ public class User {
 
     public User() {}
 
+    @OneToMany(mappedBy = "user")
+    private List<Song> songs;
+    
     public User(String username, String password, String role) {
     this.username = username;
     this.password = password;

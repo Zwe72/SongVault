@@ -1,6 +1,5 @@
 package harjoitustyo.songvault;
 
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,7 +30,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 		return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .roles(user.getRole())
+                .authorities(user.getRole())
                 .build();
 	}
 }
