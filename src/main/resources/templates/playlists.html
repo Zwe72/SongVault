@@ -1,0 +1,17 @@
+<h1>My Playlists</h1>
+
+<h2>Create Playlist</h2>
+
+<form th:action="@{/playlist/create}" method="post">
+    <input type="text" name="name" placeholder="Playlist name">
+    <button type="submit">Create</button>
+</form>
+
+<ul>
+    <li th:each="pl : ${playlists}">
+        <a th:href="@{/playlist/{id}(id=${pl.id})}" 
+           th:text="${pl.name}"></a>
+    </li>
+</ul>
+
+<a href="/songlist">Back</a>

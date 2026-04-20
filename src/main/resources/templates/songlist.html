@@ -8,6 +8,10 @@
 
     <h1>Song List</h1>
 
+    <p>
+    <a th:href="@{/playlists}">My Playlists</a>
+    </p>
+
     <form th:action="@{/songlist}" method="get">
         <input type="text" name="keyword" placeholder="Search songs...">
         <button type="submit">Filter</button>
@@ -35,14 +39,20 @@
             <td th:text="${song.genre}"></td>
             <td th:text="${song.year}"></td>
             <td th:text="${song.addedDate}"></td>
-            <td><a th:href="@{/editsong/{id}(id=${song.id})}">Edit</a></td>
+
             <td>
+                <a th:href="@{/editsong/{id}(id=${song.id})}">Edit</a>
+
             <form th:action="@{/deletesong/{id}(id=${song.id})}" method="post"
             onsubmit="return confirm('Are you sure you want to delete this song?')">
             <button type="submit">Delete</button>
             </form>
-        </td>
-        </tr>
+            
+        <form th:action="@{/playlist/add/1/{id}(id=${song.id})}" method="post">
+            <button type="submit">Add to playlist</button>
+        </form>
+    </td>
+</tr>
     </table>
 
     <form th:action="@{/logout}" method="post">

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import harjoitustyo.songvault.model.Playlist;
+import harjoitustyo.songvault.model.PlaylistRepository;
 import harjoitustyo.songvault.model.Song;
 import harjoitustyo.songvault.model.SongRepository;
 import harjoitustyo.songvault.model.User;
@@ -25,10 +27,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class SongController {
     private final SongRepository repository;
     private final UserRepository userRepository;
+    private final PlaylistRepository playlistRepository;
 
-    public SongController(SongRepository repository, UserRepository userRepository) {
+    public SongController(SongRepository repository, 
+                        UserRepository userRepository,
+                        PlaylistRepository playlistRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.playlistRepository = playlistRepository;
     }
 
     @RequestMapping("/songs")
@@ -62,7 +68,7 @@ public class SongController {
     }
 
     @PostMapping("/deletesong/{id}")
-public String deleteSong(@PathVariable Long id, Principal principal) {
+    public String deleteSong(@PathVariable Long id, Principal principal) {
 
     Song song = repository.findById(id).orElse(null);
 
@@ -137,6 +143,88 @@ public String deleteSong(@PathVariable Long id, Principal principal) {
     }
 
     return "songlist";
+    }
+
+    @GetMapping("/playlists")
+    public String playlists(Model model, Principal principal) {
+
+    User user = userRepository.findByUsername(principal.getName());
+    List<Playlist> playlists = playlistRepository.findByUser(user);
+
+    model.addAttribute("playlists", playlists);
+
+    return "playlists";
+    }
+    
+    @GetMapping("/playlist/{id}")
+    public String viewPlaylist(@PathVariable Long id, Model model, Principal principal) {
+
+    Playlist playlist = playlistRepository.findById(id).orElse(null);
+
+    if (playlist == null) {
+        return "redirect:/songlist";
+    }
+
+    if (playlist.getUser() != null &&
+    !playlist.getUser().getUsername().equals(principal.getName())) {
+        return "redirect:/songlist";
+    }
+
+    model.addAttribute("playlist", playlist);
+    return "playlist";
+    }
+
+    @PostMapping("/playlist/create")
+    public String createPlaylist(@RequestParam String name, Principal principal) {
+
+    User user = userRepository.findByUsername(principal.getName());
+
+    Playlist playlist = new Playlist(name, user);
+    playlistRepository.save(playlist);
+
+    return "redirect:/playlists";
+    }
+
+    @PostMapping("/playlist/add/{playlistId}/{songId}")
+    public String addSongToPlaylist(@PathVariable Long playlistId,
+                               @PathVariable Long songId,
+                               Principal principal) {
+
+    Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
+    Song song = repository.findById(songId).orElse(null);
+
+    if (playlist != null && song != null) {
+
+        if (playlist.getUser() != null &&
+                playlist.getUser().getUsername().equals(principal.getName())) {
+
+                playlist.getSongs().add(song);
+                playlistRepository.save(playlist);
+            }
+        }
+
+        return "redirect:/songlist";
+    }
+
+    @PostMapping("/playlist/remove/{playlistId}/{songId}")
+    public String removeSongFromPlaylist(@PathVariable Long playlistId,
+                                     @PathVariable Long songId,
+                                     Principal principal) {
+
+        Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
+        Song song = repository.findById(songId).orElse(null);
+
+        if (playlist != null && song != null) {
+
+            if (playlist.getUser() != null &&
+                playlist.getUser().getUsername().equals(principal.getName())) {
+
+                playlist.getSongs().remove(song); // 🔥 tämä tekee poiston
+                playlistRepository.save(playlist);
+            }
+        }
+
+    return "redirect:/playlist/" + playlistId;
     }
 
     @GetMapping("/login")
